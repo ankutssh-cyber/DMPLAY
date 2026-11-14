@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DM Play – Register & Earn Daily</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-gradient: radial-gradient(circle at center, #3d0303 0%, #1c0101 60%, #080000 100%);
+            --gold-grad: linear-gradient(180deg, #ffe600 0%, #ff9900 100%);
+            --red-grad: linear-gradient(180deg, #e50914 0%, #800000 100%);
+            --text-gold: #ffd700;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            padding-bottom: 90px;
+        }
+
+        #coinCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+            padding: 0 12px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background: rgba(10, 0, 0, 0.95);
+            border-bottom: 2px solid #ffd700;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .header-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-logo-svg {
+            width: 34px;
+            height: 34px;
+            filter: drop-shadow(0 0 6px #ffd700);
+        }
+
+        .logo-text {
+            font-size: 22px;
+            font-weight: 900;
+            background: linear-gradient(180deg, #fff 0%, #ffd700 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+        }
+
+        .header-btn {
+            background: var(--gold-grad);
+            color: #000;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 900;
+            font-size: 13px;
+            text-decoration: none;
+            box-shadow: 0 0 15px rgba(255, 153, 0, 0.8);
+            animation: pulseGlow 2s infinite ease-in-out;
+        }
+
+        .ticker-wrap {
+            background: linear-gradient(90deg, #4a0000, #900000, #4a0000);
+            border-top: 1px solid rgba(255,215,0,0.4);
+            border-bottom: 1px solid rgba(255,215,0,0.4);
+            overflow: hidden;
+            white-space: nowrap;
+            padding: 6px 0;
+            font-size: 12px;
+            color: #ffd700;
+            font-weight: 700;
+        }
+
+        .ticker-move {
+            display: inline-block;
+            animation: ticker 15s linear infinite;
+        }
+
+        .ticker-item {
+            display: inline-block;
+            margin-right: 35px;
+        }
+
+        .hero-banner {
+            width: 100%;
+            border-radius: 20px;
+            margin-top: 15px;
+            border: 3px solid #ffd700;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.4);
+            overflow: hidden;
+            background: #000;
+        }
+
+        .hero-banner svg {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .joined-tag {
+            background: rgba(255, 69, 0, 0.3);
+            border: 1px solid rgba(255, 153, 0, 0.8);
+            border-radius: 20px;
+            padding: 6px 18px;
+            width: max-content;
+            margin: 18px auto 10px;
+            font-size: 13px;
+            font-weight: 800;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 0 12px rgba(255,69,0,0.4);
+        }
+
+        .main-title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--text-gold);
+            text-shadow: 0 0 10px rgba(255,215,0,0.5), 0 3px 6px #000;
+            line-height: 1.2;
+            margin-bottom: 8px;
+        }
+
+        .sub-title {
+            text-align: center;
+            font-size: 13px;
+            color: #f0e6d2;
+            margin-bottom: 15px;
+            line-height: 1.5;
+            padding: 0 8px;
+        }
+
+        .code-box {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px dashed #ffd700;
+            border-radius: 30px;
+            padding: 10px 22px;
+            width: max-content;
+            margin: 0 auto 15px;
+            font-size: 14px;
+            font-weight: 800;
+            color: #fff;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .code-box:active { transform: scale(0.95); }
+
+        .timer-container { text-align: center; margin-bottom: 15px; }
+        .timer-title { font-size: 12px; font-weight: 900; color: #ff4500; margin-bottom: 6px; letter-spacing: 1px; }
+        .timer-digits { display: flex; justify-content: center; gap: 8px; }
+        .time-card {
+            background: linear-gradient(180deg, #ffe600, #ff9900);
+            color: #000;
+            font-weight: 900;
+            font-size: 18px;
+            padding: 5px 12px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+        }
+
+        .btn-main {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 15px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 900;
+            text-decoration: none;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-register { background: var(--gold-grad); color: #000; border: 2px solid #fff; }
+
+        .btn-main::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(60deg, transparent, rgba(255,255,255,0.5), transparent);
+            transform: rotate(30deg);
+            animation: shimmer 3s infinite linear;
+        }
+
+        .grid-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+        .card-item {
+            background: linear-gradient(135deg, #ff8c00 0%, #e65100 100%);
+            border-radius: 16px;
+            padding: 16px 10px;
+            text-align: center;
+            border: 2px solid #ffb74d;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+        }
+
+        .card-amount { font-size: 22px; font-weight: 900; color: #fff; text-shadow: 0 2px 5px rgba(0,0,0,0.6); }
+        .card-label { font-size: 11px; font-weight: 800; color: #ffe0b2; text-transform: uppercase; }
+
+        .official-banner {
+            width: 100%;
+            border-radius: 20px;
+            margin: 25px 0 12px;
+            border: 2.5px solid #ffd700;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.7);
+            background: linear-gradient(180deg, #600202 0%, #200000 100%);
+        }
+
+        .official-banner svg {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .info-card {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1.5px solid rgba(255, 140, 0, 0.6);
+            border-radius: 16px;
+            padding: 15px;
+            margin: 12px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+        .info-title { font-size: 14px; font-weight: 900; color: #ffd700; margin-bottom: 6px; text-transform: uppercase; }
+        .info-text { font-size: 12px; color: #ddd; line-height: 1.6; }
+
+        .example-pill {
+            background: var(--gold-grad);
+            color: #000;
+            border-radius: 20px;
+            padding: 9px 14px;
+            font-size: 12px;
+            font-weight: 900;
+            margin-top: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        }
+
+        .notice-pill {
+            background: #fff8e7;
+            color: #111;
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-size: 12px;
+            font-weight: 800;
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        .notice-pill i { color: #d32f2f; font-size: 15px; }
+
+        .calc-box {
+            background: linear-gradient(145deg, #ff8c00, #d84315);
+            border-radius: 20px;
+            padding: 20px 15px;
+            margin: 25px 0;
+            border: 2px solid #ffa726;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+        }
+
+        .calc-title { text-align: center; font-size: 24px; font-weight: 900; color: #fff; text-shadow: 0 2px 5px rgba(0,0,0,0.6); }
+        .calc-subtitle { text-align: center; font-size: 11px; color: #fff3e0; margin-bottom: 15px; }
+
+        .slider-group { margin-bottom: 14px; }
+        .slider-label { display: flex; justify-content: space-between; font-size: 12px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+        input[type=range] { width: 100%; accent-color: #ffd700; cursor: pointer; height: 6px; }
+
+        .calc-results { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 15px; }
+        .res-card { background: rgba(0,0,0,0.35); border-radius: 12px; padding: 10px 4px; text-align: center; border: 1px solid rgba(255,215,0,0.3); }
+        .res-title { font-size: 9px; font-weight: 800; color: #ffe0b2; text-transform: uppercase; }
+        .res-val { font-size: 14px; font-weight: 900; color: #ffd700; }
+
+        .total-salary-card {
+            background: #000;
+            border: 2px solid #ffd700;
+            border-radius: 16px;
+            padding: 14px;
+            text-align: center;
+            margin-top: 14px;
+            box-shadow: 0 0 15px rgba(255,215,0,0.4);
+        }
+        .total-salary-title { font-size: 11px; font-weight: 900; color: #fff; text-transform: uppercase; }
+        .total-salary-val { font-size: 26px; font-weight: 900; color: #ffd700; text-shadow: 0 0 10px rgba(255,215,0,0.8); }
+
+        .section-pill {
+            background: linear-gradient(180deg, #b71c1c 0%, #5d0000 100%);
+            border: 2px solid #ff4500;
+            border-radius: 25px;
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 900;
+            color: #ffd700;
+            margin: 25px 0 15px;
+            box-shadow: 0 4px 15px rgba(255,69,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .sticky-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(8, 0, 0, 0.96);
+            padding: 10px 14px;
+            box-shadow: 0 -4px 25px rgba(0,0,0,0.9);
+            z-index: 999;
+            border-top: 2px solid #ffd700;
+            backdrop-filter: blur(10px);
+        }
+
+        .sticky-btn {
+            max-width: 450px;
+            margin: 0 auto;
+            background: var(--gold-grad);
+            color: #000;
+            display: block;
+            text-align: center;
+            padding: 12px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 900;
+            text-decoration: none;
+            text-transform: uppercase;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+            animation: pulseGlow 2s infinite ease-in-out;
+        }
+
+        .footer-credits { text-align: center; font-size: 11px; color: #888; margin: 25px 0 10px; }
+
+        @keyframes pulseGlow { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+        @keyframes shimmer { 0% { transform: translateX(-100%) rotate(30deg); } 100% { transform: translateX(100%) rotate(30deg); } }
+        @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+    </style>
+</head>
+<body>
+
+    <canvas id="coinCanvas"></canvas>
+
+    <header>
+        <div class="header-logo-container">
+            <svg class="header-logo-svg" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="#ffd700" stroke-width="4"/>
+                <path d="M50 20 L60 40 L80 40 L65 55 L70 75 L50 60 L30 75 L35 55 L20 40 L40 40 Z" fill="#ffd700"/>
+            </svg>
+            <div class="logo-text">DM PLAY</div>
+        </div>
+        <a href="https://www.dmplay3.com/#/register?invitationCode=22668100062" class="header-btn">REGISTER</a>
+    </header>
+
+    <div class="ticker-wrap">
+        <div class="ticker-move">
+            <div class="ticker-item"><i class="fa-solid fa-trophy"></i> Aman*** just won ₹980</div>
+            <div class="ticker-item"><i class="fa-solid fa-trophy"></i> Sonu*** just won ₹3,400</div>
+            <div class="ticker-item"><i class="fa-solid fa-trophy"></i> Priya*** just won ₹5,200</div>
+            <div class="ticker-item"><i class="fa-solid fa-trophy"></i> Vikram*** just won ₹25,000</div>
+        </div>
+    </div>
+
+    <div class="container">
+        
+        <!-- Hero Banner Graphic -->
+        <div class="hero-banner">
+            <svg viewBox="0 0 400 340">
+                <defs>
+                    <radialGradient id="bgRays" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="#900000"/>
+                        <stop offset="60%" stop-color="#300000"/>
+                        <stop offset="100%" stop-color="#050000"/>
+                    </radialGradient>
+                    <linearGradient id="goldRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#ffe600"/>
+                        <stop offset="50%" stop-color="#ff8c00"/>
+                        <stop offset="100%" stop-color="#ffe600"/>
+                    </linearGradient>
+                    <linearGradient id="textDmGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="#ffeb3b"/>
+                        <stop offset="50%" stop-color="#ff5722"/>
+                        <stop offset="100%" stop-color="#d50000"/>
+                    </linearGradient>
+                </defs>
+                <rect width="400" height="340" fill="url(#bgRays)"/>
+                <circle cx="200" cy="170" r="140" fill="#080000" stroke="url(#goldRingGrad)" stroke-width="7"/>
+                <g transform="translate(200, 95) scale(0.9)">
+                    <path d="M-30 5 C-45 -15, -20 -35, 0 -10 C20 -35, 45 -15, 30 5 Z" fill="#ff3300" stroke="#ffd700" stroke-width="2"/>
+                    <path d="M0 -30 C-15 -45, 15 -45, 0 -30 Z" fill="#ffd700"/>
+                    <path d="M0 -22 C-10 -10 -18 -2 -10 6 C-4 12 0 4 0 4 C0 4 4 12 10 6 C18 -2 10 -10 0 -22 Z" fill="#ffffff"/>
+                </g>
+                <text x="200" y="210" text-anchor="middle" fill="url(#textDmGrad)" font-size="72" font-weight="900" stroke="#800000" stroke-width="3" filter="drop-shadow(0px 6px 5px #000)">DmPlay</text>
+                <path d="M 90 230 Q 200 260 310 230" fill="none" stroke="url(#goldRingGrad)" stroke-width="4" stroke-linecap="round"/>
+            </svg>
+        </div>
+
+        <div class="joined-tag">
+            <i class="fa-solid fa-fire" style="color: #ff4500;"></i> 50,000+ PLAYERS JOINED TODAY
+        </div>
+
+        <h1 class="main-title">PLAY. INVITE. WIN MORE.</h1>
+        <p class="sub-title">
+            Get up to <span style="color:#ffd700; font-weight:700;">₹10,000</span> first deposit bonus, referral rewards up to <span style="color:#ffd700; font-weight:700;">₹20 Lakh</span> & daily salary up to <span style="color:#ffd700; font-weight:700;">₹50,000</span>.
+        </p>
+
+        <div class="code-box" onclick="copyCode()">
+            Invitation Code: <span id="invCode" style="color:#ffd700;">22668100062</span> <i class="fa-regular fa-copy" style="margin-left: 6px;"></i>
+        </div>
+
+        <div class="timer-container">
+            <div class="timer-title"><i class="fa-solid fa-flame"></i> TODAY'S OFFER ENDS IN</div>
+            <div class="timer-digits">
+                <span class="time-card" id="hrs">01</span> : 
+                <span class="time-card" id="min">50</span> : 
+                <span class="time-card" id="sec">04</span>
+            </div>
+        </div>
+
+        <a href="https://www.dmplay3.com/#/register?invitationCode=22668100062" class="btn-main btn-register">
+            <i class="fa-solid fa-crown"></i> REGISTER NOW
+        </a>
+
+        <div class="grid-cards">
+            <div class="card-item">
+                <div class="card-amount">₹10,000</div>
+                <div class="card-label">Deposit Bonus</div>
+            </div>
+            <div class="card-item">
+                <div class="card-amount">₹188</div>
+                <div class="card-label">Agent Bonus</div>
+            </div>
+            <div class="card-item">
+                <div class="card-amount">₹20 Lakh</div>
+                <div class="card-label">Referral Reward</div>
+            </div>
+            <div class="card-item">
+                <div class="card-amount">₹50,000</div>
+                <div class="card-label">Daily Salary</div>
+            </div>
+        </div>
+
+        <!-- 1. Deposit Bonus Graphic -->
+        <div class="official-banner">
+            <svg viewBox="0 0 400 440">
+                <text x="200" y="38" text-anchor="middle" fill="#ffd700" font-size="22" font-weight="900">DEPOSIT BONUS</text>
+                <text x="200" y="60" text-anchor="middle" fill="#fff" font-size="14" font-weight="800">★ FOR NEW PLAYER ★</text>
+                
+                <rect x="25" y="80" width="350" height="310" rx="10" fill="rgba(0,0,0,0.45)" stroke="#ffd700" stroke-width="1.5"/>
+                <line x1="25" y1="120" x2="375" y2="120" stroke="#ffd700" stroke-width="1"/>
+                <line x1="220" y1="80" x2="220" y2="390" stroke="#ffd700" stroke-width="1"/>
+                
+                <text x="122.5" y="103" text-anchor="middle" fill="#ffd700" font-size="12" font-weight="900">1ST DEPOSIT</text>
+                <text x="297.5" y="103" text-anchor="middle" fill="#ffd700" font-size="12" font-weight="900">PLAYER BONUS</text>
+
+                <text x="122.5" y="152" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">200-499</text>
+                <text x="297.5" y="152" text-anchor="middle" fill="#ffd700" font-size="14" font-weight="900">18</text>
+                <text x="122.5" y="192" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">500-999</text>
+                <text x="297.5" y="192" text-anchor="middle" fill="#ffd700" font-size="14" font-weight="900">28</text>
+                <text x="122.5" y="232" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">1000-4999</text>
+                <text x="297.5" y="232" text-anchor="middle" fill="#ffd700" font-size="14" font-weight="900">58</text>
+                <text x="122.5" y="272" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">5000-9999</text>
+                <text x="297.5" y="272" text-anchor="middle" fill="#ffd700" font-size="14" font-weight="900">188</text>
+                <text x="122.5" y="312" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">10000-49999</text>
+                <text x="297.5" y="312" text-anchor="middle" fill="#ffd700" font-size="14" font-weight="900">288</text>
+                <text x="122.5" y="352" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">50000-999999</text>
+                <text x="297.5" y="352" text-anchor="middle" fill="#ffd700" font-size="14" font-weight="900">588</text>
+                <text x="122.5" y="380" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">1000000+</text>
+                <text x="297.5" y="380" text-anchor="middle" fill="#ffd700" font-size="14" font-weight="900">10000</text>
+            </svg>
+        </div>
+
+        <div class="info-card">
+            <div class="info-title">SAMJHIYE</div>
+            <div class="info-text">
+                Jab aap DM Play par naya account banate hain aur apna PEHLA deposit karte hain, to deposit ke hisaab se extra bonus turant wallet mein jud jaata hai. Ye sirf pehle deposit par milta hai.
+            </div>
+            <div class="example-pill">Example: ₹1,000 deposit ➔ ₹58 bonus = wallet mein ₹1,058</div>
+        </div>
+        <div class="notice-pill"><i class="fa-solid fa-circle-check"></i> Bonus app mein automatic claim hota hai.</div>
+        <div class="notice-pill"><i class="fa-solid fa-building-columns"></i> Bank account bind karna zaroori hai.</div>
+
+        <!-- 2. Agent Referral Bonus Graphic -->
+        <div class="official-banner">
+            <svg viewBox="0 0 400 370">
+                <text x="200" y="38" text-anchor="middle" fill="#ffd700" font-size="22" font-weight="900">AGENT REFERRAL BONUS</text>
+                
+                <rect x="25" y="60" width="350" height="230" rx="10" fill="rgba(0,0,0,0.45)" stroke="#ffd700" stroke-width="1.5"/>
+                <line x1="25" y1="100" x2="375" y2="100" stroke="#ffd700" stroke-width="1"/>
+                <line x1="145" y1="60" x2="145" y2="290" stroke="#ffd700" stroke-width="1"/>
+                <line x1="265" y1="60" x2="265" y2="290" stroke="#ffd700" stroke-width="1"/>
+
+                <text x="85" y="83" text-anchor="middle" fill="#ffd700" font-size="11" font-weight="900">1ST DEPOSIT AMOUNT</text>
+                <text x="205" y="83" text-anchor="middle" fill="#ffd700" font-size="11" font-weight="900">MINIMUM BETS</text>
+                <text x="320" y="83" text-anchor="middle" fill="#ffd700" font-size="11" font-weight="900">AGENT BONUS</text>
+
+                <text x="85" y="128" text-anchor="middle" fill="#fff" font-size="13">200</text>
+                <text x="205" y="128" text-anchor="middle" fill="#fff" font-size="13">1000</text>
+                <text x="320" y="128" text-anchor="middle" fill="#ffd700" font-size="14" font-weight="900">18</text>
+                <text x="85" y="162" text-anchor="middle" fill="#fff" font-size="13">500</text>
+                <text x="205" y="162" text-anchor="middle" fill="#fff" font-size="13">2500</text>
+                <text x="320" y="162" text-anchor="middle" fill="#ffd700" font-size="14" font-weight="900">28</text>
+                <text x="85" y="196" text-anchor="middle" fill="#fff" font-size="13">1000</text>
+                <text x="205" y="196" text-anchor="middle" fill="#fff" font-size="13">5000</text>
+                <text x="320" y="196" text-anchor="middle" fill="#ffd700" font-size="14" font-weight="900">58</text>
+                <text x="85" y="230" text-anchor="middle" fill="#fff" font-size="13">2500</text>
+                <text x="205" y="230" text-anchor="middle" fill="#fff" font-size="13">12500</text>
+                <text x="320" y="230" text-anchor="middle" fill="#ffd700" font-size="14" font-weight="900">88</text>
+                <text x="85" y="265" text-anchor="middle" fill="#fff" font-size="13">5000+</text>
+                <text x="205" y="265" text-anchor="middle" fill="#fff" font-size="13">25000</text>
+                <text x="320" y="265" text-anchor="middle" fill="#ffd700" font-size="14" font-weight="900">188</text>
+
+                <text x="200" y="335" text-anchor="middle" fill="#ffd700" font-size="13" font-weight="900">★ INVITE AND CLAIM YOUR BONUS AUTOMATICALLY NOW! ★</text>
+            </svg>
+        </div>
+        <div class="info-card">
+            <div class="info-title">SAMJHIYE</div>
+            <div class="info-text">
+                Aap jo bhi dosto ko apne invitation code se invite karte hain, unmein se jab koi dost apna PEHLA deposit karta hai aur us deposit ka 5 guna betting pura karta hai, tab aapko agent bonus mil jaata hai.
+            </div>
+            <div class="example-pill">Example: Dost ne ₹500 deposit + ₹2,500 bet kiya ➔ ₹28 bonus</div>
+        </div>
+
+        <!-- 3. Referral Super Bonus Graphic -->
+        <div class="official-banner">
+            <svg viewBox="0 0 400 520">
+                <text x="200" y="38" text-anchor="middle" fill="#ffd700" font-size="22" font-weight="900">REFERRAL SUPER BONUS</text>
+                
+                <rect x="25" y="55" width="350" height="400" rx="10" fill="rgba(0,0,0,0.45)" stroke="#ffd700" stroke-width="1.5"/>
+                <line x1="25" y1="95" x2="375" y2="95" stroke="#ffd700" stroke-width="1"/>
+                <line x1="145" y1="55" x2="145" y2="455" stroke="#ffd700" stroke-width="1"/>
+                <line x1="265" y1="55" x2="265" y2="455" stroke="#ffd700" stroke-width="1"/>
+
+                <text x="85" y="78" text-anchor="middle" fill="#ffd700" font-size="10" font-weight="900">INVITED SUBORDINATES</text>
+                <text x="205" y="78" text-anchor="middle" fill="#ffd700" font-size="10" font-weight="900">MINIMUM DEPOSITS</text>
+                <text x="320" y="78" text-anchor="middle" fill="#ffd700" font-size="10" font-weight="900">REWARD AMOUNT</text>
+
+                <text x="85" y="118" text-anchor="middle" fill="#fff" font-size="12">1</text><text x="205" y="118" text-anchor="middle" fill="#fff" font-size="12">300</text><text x="320" y="118" text-anchor="middle" fill="#ffd700" font-size="13" font-weight="900">48</text>
+                <text x="85" y="140" text-anchor="middle" fill="#fff" font-size="12">3</text><text x="205" y="140" text-anchor="middle" fill="#fff" font-size="12">300</text><text x="320" y="140" text-anchor="middle" fill="#ffd700" font-size="13" font-weight="900">168</text>
+                <text x="85" y="162" text-anchor="middle" fill="#fff" font-size="12">10</text><text x="205" y="162" text-anchor="middle" fill="#fff" font-size="12">500</text><text x="320" y="162" text-anchor="middle" fill="#ffd700" font-size="13" font-weight="900">680</text>
+                <text x="85" y="184" text-anchor="middle" fill="#fff" font-size="12">25</text><text x="205" y="184" text-anchor="middle" fill="#fff" font-size="12">500</text><text x="320" y="184" text-anchor="middle" fill="#ffd700" font-size="13" font-weight="900">1,800</text>
+                <text x="85" y="206" text-anchor="middle" fill="#fff" font-size="12">50</text><text x="205" y="206" text-anchor="middle" fill="#fff" font-size="12">500</text><text x="320" y="206" text-anchor="middle" fill="#ffd700" font-size="13" font-weight="900">3,200</text>
+                <text x="85" y="228" text-anchor="middle" fill="#fff" font-size="12">75</text><text x="205" y="228" text-anchor="middle" fill="#fff" font-size="12">800</text><text x="320" y="228" text-anchor="middle" fill="#ffd700" font-size="13" font-weight="900">4,800</text>
+                <text x="85" y="250" text-anchor="middle" fill="#fff" font-size="12">100</text><text x="205" y="250" text-anchor="middle" fill="#fff" font-size="12">800</text><text x="320" y="250" text-anchor="middle" fill="#ffd700" font-size="13" font-weight="900">6,800</text>
+                <text x="85" y="272" text-anchor="middle" fill="#fff" font-size="12">200</text><text x="205" y="272" text-anchor="middle" fill="#fff" font-size="12">800</text><text x="320" y="272" text-anchor="middle" fill="#ffd700" font-size="13" font-weight="900">16,800</text>
+                <text x="85" y="294" text-anchor="middle" fill="#fff" font-size="12">500</text><text x="205" y="294" text-anchor="middle" fill="#fff" font-size="12">800</text><text x="320" y="294" text-anchor="middle" fill="#ffd700" font-size="13" font-weight="900">48,000</text>
+                <text x="85" y="316" text-anchor="middle" fill="#fff" font-size="12">1000</text><text x="205" y="316" text-anchor="middle" fill="#fff" font-size="12">1200</text><text x="320" y="316" text-anchor="middle" fill="#ffd700" font-size="13" font-weight="900">100,000</text>
+                <text x="85" y="338" text-anchor="middle" fill="#fff" font-size="12">2000</text><text x="205" y="338" text-anchor="middle" fill="#fff" font-size="12">1200</text><text x="320" y="338" text-anchor="middle" fill="#ffd700" font-size="13" font-weight="900">200,000</text>
+                <text x="85" y="360" text-anchor="middle" fill="#fff" font-size="12">4000</text><text x="205" y="360" text-anchor="middle" fill="#fff" font-size="12">1200</text><text x="320" y="360" text-anchor="middle" fill="#ffd700" font-size="13" font-weight="900">350,000</text>
+                <text x="85" y="382" text-anchor="middle" fill="#fff" font-size="12">10000</text><text x="205" y="382" text-anchor="middle" fill="#fff" font-size="12">1200</text><text x="320" y="382" text-anchor="middle" fill="#ffd700" font-size="13" font-weight="900">500,000</text>
+                <text x="85" y="404" text-anchor="middle" fill="#fff" font-size="12">50000</text><text x="205" y="404" text-anchor="middle" fill="#fff" font-size="12">1500</text><text x="320" y="404" text-anchor="middle" fill="#ffd700" font-size="13" font-weight="900">1,000,000</text>
+                <text x="85" y="426" text-anchor="middle" fill="#fff" font-size="12">100000</text><text x="205" y="426" text-anchor="middle" fill="#fff" font-size="12">1500</text><text x="320" y="426" text-anchor="middle" fill="#ffd700" font-size="13" font-weight="900">2,000,000</text>
+
+                <text x="200" y="485" text-anchor="middle" fill="#ffd700" font-size="13" font-weight="900">★ BONUSES CLAIMED AUTOMATICALLY IN DMPlay APP ★</text>
+            </svg>
+        </div>
+        <div class="info-card">
+            <div class="info-title">SAMJHIYE</div>
+            <div class="info-text">
+                Aapke invitation code se jitne log register karke minimum deposit karte hain, us number ke hisaab se ek-baar ka super reward milta hai. 1 invite par ₹48 se lekar 1 lakh logon par ₹20 lakh tak seedha wallet mein.
+            </div>
+            <div class="example-pill">Example: 10 dost ne ₹500 deposit kiya ➔ ₹680 reward mila</div>
+        </div>
+        <div class="notice-pill"><i class="fa-solid fa-circle-check"></i> Invitation + minimum deposit dono pura karein.</div>
+
+        <!-- 4. Daily Salary System Graphic -->
+        <div class="official-banner">
+            <svg viewBox="0 0 400 420">
+                <text x="200" y="38" text-anchor="middle" fill="#ffd700" font-size="22" font-weight="900">DAILY SALARY SYSTEM</text>
+                
+                <rect x="25" y="60" width="350" height="300" rx="10" fill="rgba(0,0,0,0.45)" stroke="#ffd700" stroke-width="1.5"/>
+                <line x1="25" y1="100" x2="375" y2="100" stroke="#ffd700" stroke-width="1"/>
+                <line x1="145" y1="60" x2="145" y2="360" stroke="#ffd700" stroke-width="1"/>
+                <line x1="265" y1="60" x2="265" y2="360" stroke="#ffd700" stroke-width="1"/>
+
+                <text x="85" y="83" text-anchor="middle" fill="#ffd700" font-size="11" font-weight="900">DEPOSIT MEMBER</text>
+                <text x="205" y="83" text-anchor="middle" fill="#ffd700" font-size="11" font-weight="900">DEPOSIT AMOUNT</text>
+                <text x="320" y="83" text-anchor="middle" fill="#ffd700" font-size="11" font-weight="900">SALARY</text>
+
+                <text x="85" y="125" text-anchor="middle" fill="#fff" font-size="13">10</text><text x="205" y="125" text-anchor="middle" fill="#fff" font-size="13">5,000</text><text x="320" y="125" text-anchor="middle" fill="#ffd700" font-size="14" font-weight="900">600</text>
+                <text x="85" y="155" text-anchor="middle" fill="#fff" font-size="13">25</text><text x="205" y="155" text-anchor="middle" fill="#fff" font-size="13">10,000</text><text x="320" y="155" text-anchor="middle" fill="#ffd700" font-size="14" font-weight="900">1,500</text>
+                <text x="85" y="185" text-anchor="middle" fill="#fff" font-size="13">50</text><text x="205" y="185" text-anchor="middle" fill="#fff" font-size="13">30,000</text><text x="320" y="185" text-anchor="middle" fill="#ffd700" font-size="14" font-weight="900">3,500</text>
+                <text x="85" y="215" text-anchor="middle" fill="#fff" font-size="13">80</text><text x="205" y="215" text-anchor="middle" fill="#fff" font-size="13">60,000</text><text x="320" y="215" text-anchor="middle" fill="#ffd700" font-size="14" font-weight="900">6,000</text>
+                <text x="85" y="245" text-anchor="middle" fill="#fff" font-size="13">100</text><text x="205" y="245" text-anchor="middle" fill="#fff" font-size="13">80,000</text><text x="320" y="245" text-anchor="middle" fill="#ffd700" font-size="14" font-weight="900">8,000</text>
+                <text x="85" y="275" text-anchor="middle" fill="#fff" font-size="13">150</text><text x="205" y="275" text-anchor="middle" fill="#fff" font-size="13">130,000</text><text x="320" y="275" text-anchor="middle" fill="#ffd700" font-size="14" font-weight="900">13,000</text>
+                <text x="85" y="305" text-anchor="middle" fill="#fff" font-size="13">200</text><text x="205" y="305" text-anchor="middle" fill="#fff" font-size="13">200,000</text><text x="320" y="305" text-anchor="middle" fill="#ffd700" font-size="14" font-weight="900">20,000</text>
+                <text x="85" y="335" text-anchor="middle" fill="#fff" font-size="13">350</text><text x="205" y="335" text-anchor="middle" fill="#fff" font-size="13">350,000</text><text x="320" y="335" text-anchor="middle" fill="#ffd700" font-size="14" font-weight="900">30,000</text>
+                <text x="85" y="365" text-anchor="middle" fill="#fff" font-size="13">500</text><text x="205" y="365" text-anchor="middle" fill="#fff" font-size="13">500,000</text><text x="320" y="365" text-anchor="middle" fill="#ffd700" font-size="14" font-weight="900">50,000</text>
+            </svg>
+        </div>
+        <div class="info-card">
+            <div class="info-title">SAMJHIYE</div>
+            <div class="info-text">
+                Aapki team mein roz kitne genuine deposit members active hote hain aur unka total deposit kitna hai, uske hisaab se aapko HAR DIN salary milti hai.
+            </div>
+            <div class="example-pill">Example: 25 members ne ₹10,000 deposit kiya ➔ aaj ki salary ₹1,500</div>
+        </div>
+
+        <!-- 5. Ads Fee Support Graphic -->
+        <div class="section-pill">
+            <i class="fa-solid fa-bolt"></i> ADS FEE DAILY SUPPORT
+        </div>
+        <div class="official-banner">
+            <svg viewBox="0 0 400 420">
+                <rect x="20" y="20" width="360" height="380" rx="15" fill="rgba(0,0,0,0.5)" stroke="#ffd700" stroke-width="2"/>
+                
+                <path d="M 20 35 Q 20 20 35 20 L 365 20 Q 380 20 380 35 L 380 70 L 20 70 Z" fill="url(#goldRingGrad)"/>
+                <text x="110" y="50" text-anchor="middle" fill="#000" font-size="11" font-weight="900">DIRECT FIRST CHARGE</text>
+                <text x="300" y="50" text-anchor="middle" fill="#000" font-size="11" font-weight="900">ADS FEE</text>
+
+                <line x1="210" y1="70" x2="210" y2="400" stroke="#ffd700" stroke-width="1"/>
+                
+                <text x="110" y="102" text-anchor="middle" fill="#fff" font-size="13" font-weight="800">10</text>
+                <text x="300" y="102" text-anchor="middle" fill="#ffd700" font-size="14" font-weight="900">2,000</text>
+                <line x1="20" y1="117" x2="380" y2="117" stroke="rgba(255,215,0,0.2)" stroke-width="1"/>
+
+                <text x="110" y="139" text-anchor="middle" fill="#fff" font-size="13" font-weight="800">25</text>
+                <text x="300" y="139" text-anchor="middle" fill="#ffd700" font-size="14" font-weight="900">5,000</text>
+                <line x1="20" y1="154" x2="380" y2="154" stroke="rgba(255,215,0,0.2)" stroke-width="1"/>
+
+                <text x="110" y="176" text-anchor="middle" fill="#fff" font-size="13" font-weight="800">50</text>
+                <text x="300" y="176" text-anchor="middle" fill="#ffd700" font-size="14" font-weight="900">10,000</text>
+                <line x1="20" y1="191" x2="380" y2="191" stroke="rgba(255,215,0,0.2)" stroke-width="1"/>
+
+                <text x="110" y="213" text-anchor="middle" fill="#fff" font-size="13" font-weight="800">80</text>
+                <text x="300" y="213" text-anchor="middle" fill="#ffd700" font-size="14" font-weight="900">18,000</text>
+                <line x1="20" y1="228" x2="380" y2="228" stroke="rgba(255,215,0,0.2)" stroke-width="1"/>
+
+                <text x="110" y="250" text-anchor="middle" fill="#fff" font-size="13" font-weight="800">100</text>
+                <text x="300" y="250" text-anchor="middle" fill="#ffd700" font-size="14" font-weight="900">25,000</text>
+                <line x1="20" y1="265" x2="380" y2="265" stroke="rgba(255,215,0,0.2)" stroke-width="1"/>
+
+                <text x="110" y="287" text-anchor="middle" fill="#fff" font-size="13" font-weight="800">150</text>
+                <text x="300" y="287" text-anchor="middle" fill="#ffd700" font-size="14" font-weight="900">35,000</text>
+                <line x1="20" y1="302" x2="380" y2="302" stroke="rgba(255,215,0,0.2)" stroke-width="1"/>
+
+                <text x="110" y="324" text-anchor="middle" fill="#fff" font-size="13" font-weight="800">200</text>
+                <text x="300" y="324" text-anchor="middle" fill="#ffd700" font-size="14" font-weight="900">45,000</text>
+                <line x1="20" y1="339" x2="380" y2="339" stroke="rgba(255,215,0,0.2)" stroke-width="1"/>
+
+                <text x="110" y="361" text-anchor="middle" fill="#fff" font-size="13" font-weight="800">350</text>
+                <text x="300" y="361" text-anchor="middle" fill="#ffd700" font-size="14" font-weight="900">75,000</text>
+                <line x1="20" y1="376" x2="380" y2="376" stroke="rgba(255,215,0,0.2)" stroke-width="1"/>
+
+                <text x="110" y="393" text-anchor="middle" fill="#fff" font-size="13" font-weight="800">500</text>
+                <text x="300" y="393" text-anchor="middle" fill="#ffd700" font-size="14" font-weight="900">1,000,000</text>
+            </svg>
+        </div>
+        <div class="info-card">
+            <div class="info-title">SAMJHIYE</div>
+            <div class="info-text">
+                Agar aap apni team badhane ke liye promotion ya ads chalate hain, to DM Play aapke ads ka kharcha bhi uthata hai. 50 members par ₹10,000 aur 500 par ₹1,00,000 tak ads fee support milta hai.
+            </div>
+            <div class="example-pill">Example: 50 direct first charge ➔ ₹10,000 ads fee support</div>
+        </div>
+        <div class="notice-pill"><i class="fa-solid fa-shield-halved"></i> Final decision supervisor ki hogi.</div>
+
+        <!-- KAMAI CALCULATOR -->
+        <div class="calc-box">
+            <div class="calc-title">KAMAI CALCULATOR</div>
+            <div class="calc-subtitle">Slider chalaiye aur dekhiye aap kitna kama sakte hain</div>
+
+            <div class="slider-group">
+                <div class="slider-label"><span>Aapka pehla deposit (₹)</span><span id="v1">1,000</span></div>
+                <input type="range" id="s1" min="200" max="100000" value="1000" oninput="calc()">
+            </div>
+
+            <div class="slider-group">
+                <div class="slider-label"><span>Invite kiye dost</span><span id="v2">10</span></div>
+                <input type="range" id="s2" min="1" max="500" value="10" oninput="calc()">
+            </div>
+
+            <div class="slider-group">
+                <div class="slider-label"><span>Roz ke deposit members</span><span id="v3">25</span></div>
+                <input type="range" id="s3" min="1" max="500" value="25" oninput="calc()">
+            </div>
+
+            <div class="slider-group">
+                <div class="slider-label"><span>Team ka roz ka deposit (₹)</span><span id="v4">10,000</span></div>
+                <input type="range" id="s4" min="1000" max="500000" value="10000" step="1000" oninput="calc()">
+            </div>
+
+            <div class="calc-results">
+                <div class="res-card">
+                    <div class="res-title">DEPOSIT BONUS</div>
+                    <div class="res-val" id="rBonus">₹58</div>
+                </div>
+                <div class="res-card">
+                    <div class="res-title">REFERRAL REWARD</div>
+                    <div class="res-val" id="rRef">₹680</div>
+                </div>
+                <div class="res-card">
+                    <div class="res-title">DAILY SALARY</div>
+                    <div class="res-val" id="rSal">₹1,500</div>
+                </div>
+            </div>
+
+            <div class="total-salary-card">
+                <div class="total-salary-title">MAHINE KI SALARY (30 DIN)</div>
+                <div class="total-salary-val" id="rTotal">₹45,000</div>
+            </div>
+        </div>
+
+        <div style="background: linear-gradient(145deg, #ff8c00, #e64a19); border-radius: 20px; padding: 25px 15px; text-align: center; margin: 25px 0 15px; border: 2px solid #ffd700; box-shadow: 0 0 25px rgba(255,215,0,0.5);">
+            <i class="fa-solid fa-crown" style="font-size: 38px; color: #fff; margin-bottom: 8px;"></i>
+            <h2 style="font-size: 24px; font-weight: 900; color: #fff;">JOIN NOW & START EARNING DAILY</h2>
+            <p style="font-size: 13px; color: #fff; margin: 4px 0 15px;">Earn more • Invite more • Win more</p>
+
+            <a href="https://www.dmplay3.com/#/register?invitationCode=22668100062" class="btn-main btn-register" style="margin-bottom:0;">
+                <i class="fa-solid fa-crown"></i> REGISTER NOW
+            </a>
+        </div>
+
+        <div class="footer-credits">
+            © 2026 DM Play • 18+ Play responsibly.
+        </div>
+
+    </div>
+
+    <div class="sticky-footer">
+        <a href="https://www.dmplay3.com/#/register?invitationCode=22668100062" class="sticky-btn">
+            REGISTER & CLAIM BONUS
+        </a>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('coinCanvas');
+        const ctx = canvas.getContext('2d');
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const coins = [];
+        for (let i = 0; i < 20; i++) {
+            coins.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: Math.random() * 4 + 2,
+                speedY: Math.random() * 0.8 + 0.3,
+                opacity: Math.random() * 0.5 + 0.2
+            });
+        }
+
+        function drawCoins() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            coins.forEach(c => {
+                ctx.beginPath();
+                ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 215, 0, ${c.opacity})`;
+                ctx.fill();
+                c.y += c.speedY;
+                if (c.y > canvas.height) { c.y = -10; c.x = Math.random() * canvas.width; }
+            });
+            requestAnimationFrame(drawCoins);
+        }
+        drawCoins();
+
+        function copyCode() {
+            const code = document.getElementById('invCode').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('Invitation Code Copied: ' + code);
+            });
+        }
+
+        let time = 6604;
+        setInterval(() => {
+            if(time > 0) time--;
+            const h = Math.floor(time / 3600);
+            const m = Math.floor((time % 3600) / 60);
+            const s = time % 60;
+            document.getElementById('hrs').innerText = String(h).padStart(2, '0');
+            document.getElementById('min').innerText = String(m).padStart(2, '0');
+            document.getElementById('sec').innerText = String(s).padStart(2, '0');
+        }, 1000);
+
+        function calc() {
+            const v1 = parseInt(document.getElementById('s1').value);
+            const v2 = parseInt(document.getElementById('s2').value);
+            const v3 = parseInt(document.getElementById('s3').value);
+            const v4 = parseInt(document.getElementById('s4').value);
+
+            document.getElementById('v1').innerText = v1.toLocaleString('en-IN');
+            document.getElementById('v2').innerText = v2;
+            document.getElementById('v3').innerText = v3;
+            document.getElementById('v4').innerText = v4.toLocaleString('en-IN');
+
+            let depBonus = 18;
+            if (v1 >= 1000000) depBonus = 10000;
+            else if (v1 >= 50000) depBonus = 588;
+            else if (v1 >= 10000) depBonus = 288;
+            else if (v1 >= 5000) depBonus = 188;
+            else if (v1 >= 1000) depBonus = 58;
+            else if (v1 >= 500) depBonus = 28;
+
+            let refReward = 48;
+            if (v2 >= 100000) refReward = 2000000;
+            else if (v2 >= 50000) refReward = 1000000;
+            else if (v2 >= 10000) refReward = 500000;
+            else if (v2 >= 4000) refReward = 350000;
+            else if (v2 >= 2000) refReward = 200000;
+            else if (v2 >= 1000) refReward = 100000;
+            else if (v2 >= 500) refReward = 48000;
+            else if (v2 >= 200) refReward = 16800;
+            else if (v2 >= 100) refReward = 6800;
+            else if (v2 >= 75) refReward = 4800;
+            else if (v2 >= 50) refReward = 3200;
+            else if (v2 >= 25) refReward = 1800;
+            else if (v2 >= 10) refReward = 6800;
+            else if (v2 >= 3) refReward = 168;
+
+            let dailySalary = 0;
+            if (v3 >= 500 && v4 >= 500000) dailySalary = 50000;
+            else if (v3 >= 350 && v4 >= 350000) dailySalary = 30000;
+            else if (v3 >= 200 && v4 >= 200000) dailySalary = 20000;
+            else if (v3 >= 150 && v4 >= 130000) dailySalary = 13000;
+            else if (v3 >= 100 && v4 >= 80000) dailySalary = 8000;
+            else if (v3 >= 80 && v4 >= 60000) dailySalary = 6000;
+            else if (v3 >= 50 && v4 >= 30000) dailySalary = 3500;
+            else if (v3 >= 25 && v4 >= 10000) dailySalary = 1500;
+            else if (v3 >= 10 && v4 >= 5000) dailySalary = 600;
+
+            document.getElementById('rBonus').innerText = '₹' + depBonus.toLocaleString('en-IN');
+            document.getElementById('rRef').innerText = '₹' + refReward.toLocaleString('en-IN');
+            document.getElementById('rSal').innerText = '₹' + dailySalary.toLocaleString('en-IN');
+
+            const monthTotal = dailySalary * 30;
+            document.getElementById('rTotal').innerText = '₹' + monthTotal.toLocaleString('en-IN');
+        }
+        calc();
+    </script>
+</body>
+</html>
